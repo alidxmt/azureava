@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ALIZOLFAGHARIAN</title>
+  <!-- <script src="https://d3js.org/d3.v5.min.js"></script> -->
+  <!-- A17C84 181A27 -->
+  <!-- var colors = ['#A17C84', '#4B4142', '#29262F', ]; -->
+  <!-- '#181A27', '#4B4142', '#625157', '#A68687', -->
+   <!-- '#373946', '#6E6872', '#9A8584' -->
+  <!-- '#373946', '#6E6872', '#9A8584']; -->
+
+  <style>
+    :root {
+      --unique-background-color: #181A27;
+      --unique-font-color: #A68687; /* White font color */
+      --unique-border-color: #cebebb;
+    }
+    body, html {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: 'Arial', 'Helvetica', sans-serif;
+      color: var(--unique-font-color); /* Set font color */
+      background-color: var(--unique-background-color);
+    }
+    .colorful-div {
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      margin: 5px;
+    }
+    #full-page-div {
+      width: 100%;
+      height: 100%;
+      background-color: var(--unique-background-color);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start; /* Align content to the top */
+    }
+    #full-page-div h1 {
+      margin-top: 40px;
+      margin-bottom: 10px;
+      display: inline-block; /* Ensures accurate width calculation */
+    }
+    #colorful-div-container {
+      display: inline-block;
+      text-align: center;
+      margin-top: 20px;
+    }
+    .menu-item {
+      display: inline-block;
+      cursor: pointer;
+      margin-right: 2px;
+      padding: 10px;
+      border: 1px solid var(--unique-border-color); /* Set border color */
+      border-radius: 5px;
+    }
+    #menu-div {
+      margin-top: 10px; /* Added margin between colorful divs and menu */
+    }
+    .assistant {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    .assistant-input {
+      margin-right: 2px;
+      height: 100px;
+      width: 510px;
+      padding: 5px;
+      box-sizing: border-box;
+      resize: vertical; /* Allow vertical resizing */
+      overflow-y: auto; /* Enable vertical scrolling */
+      border: 1px solid var(--unique-border-color); /* Set border color */
+      border-radius: 5px;
+      color: var(--unique-font-color); /* Set font color */
+      background-color: var(--unique-background-color);
+      margin-bottom: 10px; /* Add margin to separate input and answer areas */
+    }
+    .assistant-input::placeholder {
+    color: var(--unique-font-color); /* Set the color you desire for the placeholder text */
+    }
+    
+    .assistant-input:focus {
+        border: 2px solid --unique-border-color; /* Set border color when input is focused */
+        outline: none; /* Remove default focus outline */
+    }
+    .svgs {
+        margin-right: 2px;
+        width: 510px;
+        border-radius: 5px;
+        fill: url(#unique-background-color); /* Use var() directly in url() */
+        border: 1px solid var(--unique-border-color); /* Set border color */
+        border-radius: 5px;
+        height: 200px;
+        display: block;
+        margin: 0;
+        margin-top: 20px;
+    }
+
+  </style>
+</head>
+<body>
+
+<div id="full-page-div">
+  <!-- Your content goes here -->
+  <!-- <h1>A&nbspL&nbspI&nbsp&nbsp&nbspZ&nbspO&nbspL&nbspF&nbspA&nbspG&nbspH&nbspA&nbspR&nbspI&nbspA&nbspN</h1> -->
+  <div id="colorful-div-container"></div>
+  <div id="menu-div">   
+    <div class="menu-item">Projects</div>
+    <div class="menu-item">Data Philosophy</div>
+    <div class="menu-item">AI Doxameter</div>
+    <div class="menu-item">Tools</div> 
+    <div class="menu-item">Hire Me</div>
+  </div>
+  <div class="assistant">
+    <!-- Input box area  placeholder="welcome to my homepage, here you could ask my assistant about me and also set an appointment" -->
+    <textarea id="user_message" class="assistant-input">I am Flan-t5, working on a local machine somewhere in , before training.</textarea>
+  </div>
+  <div class="svg-div">
+    <!-- SVG element with a rectangle having the same background color as the div -->
+    <svg id='chart' class="svgs" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+      <rect width="100%" height="100%" fill="var(--unique-background-color)"/>
+      <!-- <text id="svgText" x="10px" y="10px" dominant-baseline="top" text-anchor="left" fill="var(--unique-font-color)" font-size="12"> -->
+        <g id="svgTextGroup" fill="var(--unique-font-color)" font-size="12" dominant-baseline="top" text-anchor="left" transform="translate(0, 30)">
+          <!-- Dynamic text elements will be added here -->
+        </g>
+    </svg>
+  </div>
+</div>
+
+
+
+<script>
+    const socket = new WebSocket('ws://localhost:8000');
+    function createTspans(text) {
+      const words = text.split(' ');
+
+      // Clear previous text elements
+      const svgTextGroup = document.getElementById('svgTextGroup');
+      svgTextGroup.innerHTML = '';
+
+      let yPosition = 10; // Initial vertical position
+
+      for (let i = 0; i < words.length; i += 10) {
+        const line = words.slice(i, i + 10).join(' ');
+        const textElement = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        textElement.setAttribute('x', '10'); // Left margin
+        textElement.setAttribute('y', yPosition);
+        textElement.textContent = line;
+        svgTextGroup.appendChild(textElement);
+
+        yPosition += 1.2 * 12; // Increment y position for the next line
+    }
+  }
+
+
+
+    socket.addEventListener('message', function(event) {
+      createTspans(event.data);
+
+      // const svgText = document.getElementById('svgText');
+
+      // const result = createTspans(event.data);
+      // // svgText.textContent = result;
+      // svgText.innerHTML = result;
+
+
+        // document.getElementById('result').innerText = `Result: ${event.data}`;
+    });
+</script>
+</body>
+<script>
+  const promptList = ['','Write a short summary for this text:','answer the following question reasoning step-by-step.']
+
+  var colors = ['#A17C84', '#4B4142', '#29262F', '#181A27', '#4B4142', '#625157', '#A68687', '#373946', '#6E6872', '#9A8584'];
+  // const ipAddress = fetch('https://api.ipify.org?format=json')
+  //                   .then(response => response.json())
+  //                   .then(data => data.ip);
+  // console.log('ipAddress is:',ipAddress)
+
+  document.getElementById('user_message').addEventListener('keydown', function (event) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+        event.preventDefault();
+
+        // Replace the form submission with your WebSocket send logic
+        if (socket.readyState === WebSocket.OPEN) {
+            val = promptList[0]+this.value
+            val  = val.substring(0, 510)
+            socket.send(val.trim());
+            this.placeholder = this.value
+            this.value = ''; // Clear the textarea
+        }
+    }
+});
+</script>
+<script>
+
+function reply_toMessage() {
+  const user_message = document.getElementById('user_message');
+  socket.send(user_message.value);
+}
+</script>
+</html>

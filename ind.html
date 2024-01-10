@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    svg {
+      height: 50px; /* Adjusted height to half */
+      width: 100%; /* Set width to 100% of the page */
+      overflow: hidden; /* To prevent horizontal scrollbars */
+    }
+    circle {
+      fill: red;
+    }
+  </style>
+  <title>Sine Wave Animation (SVG)</title>
+</head>
+<body>
+
+  <svg id="sineSvg">
+    <circle id="pointCircle" r="10" cx="calc(100% - 10px)" cy="25"></circle>
+  </svg>
+
+  <script>
+    const svg = document.getElementById('sineSvg');
+    const pointCircle = document.getElementById('pointCircle');
+    
+    const frequency = 8; /* Increased frequency for more periods */
+    const sampleRate = 600;
+    
+    let phase = 0;
+
+    function updatePath() {
+      const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      let d = '';
+
+      const points = sampleRate;
+
+      for (let i = 0; i < points; i++) {
+        const x = (i / sampleRate) * svg.width.baseVal.value;
+        const y = Math.sin(2 * Math.PI * frequency * x / svg.width.baseVal.value + phase) * (svg.height.baseVal.value / 2) + (svg.height.baseVal.value / 2);
+        d += `${x},${y} `;
+      }
+
+      path.setAttribute('d', `M ${d}`);
+      path.setAttribute('fill', 'transparent');
+      path.setAttribute('stroke', 'black');
+
+      // Clear the previous paths
+      while (svg.firstChild) {
+        svg.removeChild(svg.firstChild);
+      }
+
+      svg.appendChild(path);
+
+      // Set the center of the circle at the height of the sine wave on the right
+      const yRightmost = Math.sin(phase + Math.PI) * (svg.height.baseVal.value / 2) + (svg.height.baseVal.value / 2);
+      pointCircle.setAttribute('cy', yRightmost - 10); // Adjusted to be 10 px above the rightmost point
+      pointCircle.setAttribute('cx', `calc(100% - 10px)`); // Adjusted to be 10 px from the right edge
+
+      phase += 0.1;
+      if (phase > 2 * Math.PI) {
+        phase = 0; // Reset the phase when it completes one full cycle
+      }
+
+      requestAnimationFrame(updatePath);
+    }
+
+    updatePath();
+  </script>
+</body>
+</html>
